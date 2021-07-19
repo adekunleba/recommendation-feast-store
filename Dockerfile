@@ -53,6 +53,6 @@ RUN chmod 0755 bin/*
 RUN chmod +x bin/docker-entrypoint.sh
 
 RUN ls -lh
-
+# Just a comment
 # We can move this to a bash shell to run the commands
 CMD [ "feast", "apply" ]
