@@ -1,0 +1,5 @@
+project: clicks_ad_repo
+registry: s3://deploy-mlops/registry.db
+provider: redis
+# online_store:
+#     path: s3://deploy-mlops/online_store.db
