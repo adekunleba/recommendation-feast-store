@@ -1,18 +1,54 @@
-name: Docker Image CI
+name: Docker deployment
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-
-  build:
-
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - uses: actions/checkout@v2
+
+      - name: Perform Scan
+        uses: ShiftLeftSecurity/scan-action@master
+        with:
+          type: "credscan,python"
+        env:
+          WORKSPACE: https://github.com/${{ github.repository }}/blob/${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python-3.8@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: |
+            --severity-threshold=high --file=requirements.txt --command=python3 --allow-missing
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: tonytunde2012/feature_ops:0.0.1, tonytunde2012/feature_ops:latest
+      
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: tonytunde2012/image_aug
+          readme-filepath: ./docker_description.md
