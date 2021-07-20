@@ -1,15 +1,18 @@
-FROM amd64/python:3.9.4-alpine AS app
+FROM continuumio/miniconda3 AS app
 LABEL maintainer="Adekunle Babatunde <adekunleba@gmail.com>"
 
 WORKDIR /app
+ENV DEBIAN_FRONTEND=noninteractive
 
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
-
-RUN apk update \
-  &&  apk add python3-dev build-base \
+RUN apt update \
+  && apt install curl git cmake ack g++ python3-dev -yq \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
-  && addgroup -S python && adduser -S python -G python \
-  && chown python:python -R /app
+  # && addgroup python \ 
+  && adduser --system --group python \
+  && chown python:python -R /app \
+  && apt-get install g++-8 -yq \
+  && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 \
+  && chown python:python -R /opt/conda 
 
 USER python
 
@@ -36,7 +39,7 @@ ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 RUN git clone -b mlflow-feast https://github.com/qooba/feast.git
 RUN cd feast && make install-python-ci-dependencies
-RUN cd sdk/python && pip install -e .
+RUN cd feast/sdk/python && pip install -e .
 
 # End install feast
 RUN cd /app
