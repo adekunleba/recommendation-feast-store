@@ -13,9 +13,8 @@ RUN apt update \
   && chown python:python -R /app \
   && apt-get install g++-8 -yq \
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 \
-  && pip3 install --upgrade --force pip 
-  # && chown python:python -R /usr/local/ \
-  # && chown python:python -R /usr/lib/
+  && pip3 install --upgrade --force pip \
+  && chown python:python -R /usr
 USER python
 
 COPY --chown=python:python requirements*.txt ./
@@ -40,8 +39,8 @@ ARG AWS_SECRET_ACCESS_KEY
 ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 RUN git clone -b mlflow-feast https://github.com/qooba/feast.git
-RUN cd feast && make install-python-ci-dependencies
-RUN cd feast/sdk/python && pip install -e .
+RUN cd /app/feast && make install-python-ci-dependencies
+RUN cd /app/feast/sdk/python && pip install -e .
 
 # End install feast
 RUN cd /app
