@@ -1,24 +1,26 @@
-FROM continuumio/miniconda3 AS app
+FROM debian:buster-slim AS app
 LABEL maintainer="Adekunle Babatunde <adekunleba@gmail.com>"
 
 WORKDIR /app
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update \
-  && apt install curl git cmake ack g++ python3-dev -yq \
+  && apt install bzip2 curl git wget ca-certificates subversion procps openssh-client mercurial libxrender1 libxext6 libsm6 libglib2.0-0 cmake ack g++ python3-dev python3-pip -yq \
+  && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
   # && addgroup python \ 
   && adduser --system --group python \
   && chown python:python -R /app \
   && apt-get install g++-8 -yq \
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 \
-  && chown python:python -R /opt/conda 
-
+  && pip3 install --upgrade --force pip \
+  && chown python:python -R /usr/local/ \
+  && chown python:python -R /usr/lib/
 USER python
 
 COPY --chown=python:python requirements*.txt ./
 
-RUN pip install -r ./requirements.txt
+RUN pip install --user -r ./requirements.txt 
 
 # Declare Aruguments
 ARG VIEW_LOG_DATA
