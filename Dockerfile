@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 FROM python:3.8-slim-buster AS app
+=======
+FROM debian:buster-slim AS app
+>>>>>>> 010a9d58a3947a072195295d6519d5d896be52f6
 LABEL maintainer="Adekunle Babatunde <adekunleba@gmail.com>"
 
 WORKDIR /app
@@ -14,7 +18,12 @@ RUN apt update \
   && apt-get install g++-8 -yq \
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 \
   && pip3 install --upgrade --force pip \
+<<<<<<< HEAD
   && chown python:python -R /usr
+=======
+  && chown python:python -R /usr/local/ \
+  && chown python:python -R /usr/lib/
+>>>>>>> 010a9d58a3947a072195295d6519d5d896be52f6
 USER python
 
 COPY --chown=python:python requirements*.txt ./
