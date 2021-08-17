@@ -70,6 +70,7 @@ def run_feast_apply_cmd():
     """Run the feast apply command from the python shell"""
     import subprocess
     call = subprocess.run(["feast", "apply"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    print("Running call")
     print(call.stdout.decode('utf-8'))
     return call.returncode == 0
 
