@@ -12,3 +12,7 @@ To singly update our feature store both online and offline and also materiaalize
 - Incorporate monitoring dashboard for the feature store.
 
 Where to keep the online store?
+
+
+#TODO:
+Fix feature-store deployment - We need a better way to run the feast apply from the command - since it stops on run. maybe what we even need is to do feast materialize instead 

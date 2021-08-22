@@ -4,12 +4,12 @@ Link: https://www.kaggle.com/arashnic/ctrtest
 
 #Re-write the featureTable definition as feature store
 """
+from copy import Error
 import os
 from feast import Entity, ValueType, Feature, FeatureView
 from feast.data_format import ParquetFormat
-from feast.data_source import FileSource
+from feast import FileSource
 from google.protobuf.duration_pb2 import Duration
-
 
 class ContextAdClickData:
 
@@ -57,7 +57,7 @@ class ContextAdClickData:
                 self.feature_create("is_click", ValueType.INT32),
             ],
             online=True,
-            input=self.train_view_source(),
+            batch_source=self.train_view_source(),
             tags={}
         )
     
@@ -75,7 +75,7 @@ class ContextAdClickData:
                 self.feature_create("item_id", ValueType.INT64)
             ],
             online=True,
-            input=self.view_log_data_view_source(),
+            batch_source=self.view_log_data_view_source(),
             tags={}
         )
 
@@ -94,7 +94,7 @@ class ContextAdClickData:
                 self.feature_create("product_type", ValueType.INT32)
             ],
             online=True,
-            input=self.item_data_view_source(),
+            batch_source=self.item_data_view_source(),
             tags={}
         )
         return feature_table
