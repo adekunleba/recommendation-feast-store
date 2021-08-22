@@ -122,23 +122,23 @@ def feast_run(file_path = "/tmp/data"):
     assert response == True, "Feast apply command failed"
     # Generate zip for offline
     offline_data_path = Path(file_path) / 'registry.db'
-    offline_zip = zip_file('offline.zip', offline_data_path)
+    # offline_zip = zip_file('offline.zip', offline_data_path)
     # Generate zip for online
     online_data_path = Path(file_path) / 'online_store.db'
-    online_zip = zip_file('online_store.zip', online_data_path)
+    # online_zip = zip_file('online_store.zip', online_data_path)
     
     # Push the zipped data to minio.
     
     upload_bucket = 'deploy-mlops'
     upload_location = 'feast/'
-    push_feature_db(s3, upload_bucket, offline_zip, upload_location)
-    push_feature_db(s3, upload_bucket, online_zip, upload_location)
+    push_feature_db(s3, upload_bucket, str(offline_data_path), upload_location)
+    push_feature_db(s3, upload_bucket, str(online_data_path), upload_location)
 
     # Cleanups
     import shutil
     shutil.rmtree(file_path, ignore_errors=True)
-    os.remove(online_zip)
-    os.remove(offline_zip)
+    # os.remove(online_zip)
+    # os.remove(offline_zip)
     os.remove('./feature_store.yaml')
 
 
