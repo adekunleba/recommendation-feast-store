@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 FROM python:3.8-slim-buster AS app
-=======
-FROM debian:buster-slim AS app
->>>>>>> 010a9d58a3947a072195295d6519d5d896be52f6
 LABEL maintainer="Adekunle Babatunde <adekunleba@gmail.com>"
 
 WORKDIR /app
@@ -18,41 +14,23 @@ RUN apt update \
   && apt-get install g++-8 -yq \
   && update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 800 --slave /usr/bin/g++ g++ /usr/bin/g++-8 \
   && pip3 install --upgrade --force pip \
-<<<<<<< HEAD
   && chown python:python -R /usr
-=======
-  && chown python:python -R /usr/local/ \
-  && chown python:python -R /usr/lib/
->>>>>>> 010a9d58a3947a072195295d6519d5d896be52f6
 USER python
 
 COPY --chown=python:python requirements*.txt ./
 
 RUN pip install --user -r ./requirements.txt 
 
-# Declare Aruguments
-ARG VIEW_LOG_DATA
-ENV VIEW_LOG_DATA=${VIEW_LOG_DATA}
-ARG TRAIN_DATA
-ENV TRAIN_DATA=${TRAIN_DATA}
-
 
 # install feast dev. - We are using a forked project. We should explore the master branch of feast seems to have s3 support now
-ARG FEAST_S3_ENDPOINT_URL
-ENV FEAST_S3_ENDPOINT_URL=${FEAST_S3_ENDPOINT_URL}
+ARG MINIO_SERVER_ENDPOINT
+ENV MINIO_SERVER_ENDPOINT=${MINIO_SERVER_ENDPOINT}
 
 ARG AWS_ACCESS_KEY_ID
 ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
 
 ARG AWS_SECRET_ACCESS_KEY
 ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-
-RUN git clone -b mlflow-feast https://github.com/qooba/feast.git
-RUN cd /app/feast && make install-python-ci-dependencies
-RUN cd /app/feast/sdk/python && pip install -e .
-
-# End install feast
-RUN cd /app
 
 # Copy project files
 COPY --chown=python:python bin/ ./bin
